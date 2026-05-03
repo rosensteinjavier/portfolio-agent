@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 export default function Home() {
+  const [aiExplanation, setAiExplanation] = useState("");
   const [portfolio, setPortfolio] = useState<Asset[]>([
     { symbol: "BTC-USD", amount: 0.5 },
     { symbol: "AAPL", amount: 10 },
@@ -9,6 +10,7 @@ export default function Home() {
 
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
 
     type Asset = {
       symbol: string;
@@ -52,6 +54,19 @@ export default function Home() {
 
     const data = await res.json();
     setResult(data);
+
+    //llamar al agente (explicación)
+    const agentRes = await fetch("/api/agent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        rotations: data.rotations,
+        portfolio,
+      }),
+    });
+    const agentData = await agentRes.json();
+    setAiExplanation(agentData.explanation);
+
     setLoading(false);
   };
 
@@ -160,6 +175,18 @@ export default function Home() {
           </div>
         ))}
       </div>
+
+
+
+      {aiExplanation && (
+      <div style={{ marginTop: 20 }}>
+        <h2>🧠 AI Insight</h2>
+        <p>{aiExplanation}</p>
+      </div>
+    )}
+
+
+
     </div>
   );
 }
