@@ -1,65 +1,150 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
 
 export default function Home() {
+  const [portfolio, setPortfolio] = useState([
+    { symbol: "BTC-USD", amount: 0.5 },
+    { symbol: "AAPL", amount: 10 },
+  ]);
+
+  const [result, setResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const updateItem = (i: number, field: string, value: any) => {
+    const copy = [...portfolio];
+    copy[i][field] = field === "amount" ? Number(value) : value;
+    setPortfolio(copy);
+  };
+
+  const addRow = () => {
+    setPortfolio([...portfolio, { symbol: "", amount: 0 }]);
+  };
+
+  const removeRow = (i: number) => {
+    setPortfolio(portfolio.filter((_, idx) => idx !== i));
+  };
+
+  const analyze = async () => {
+    setLoading(true);
+
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ portfolio }),
+    });
+
+    const data = await res.json();
+    setResult(data);
+    setLoading(false);
+  };
+
+  const totalAssets = portfolio.length;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div
+      style={{
+        padding: 30,
+        background: "#0b0b0b",
+        color: "#fff",
+        minHeight: "100vh",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h1 style={{ fontSize: 28, marginBottom: 20 }}>
+        Portfolio Rotation Agent
+      </h1>
+      <h3>This agent scans the market and identifies the best capital rotation opportunities in real time.</h3>
+      <h3>...The analysis take count of the actual portfolio vs a bigger list of important actives so can suggest sells & buys.</h3>
+      <h4>...this portfolio list contrast agains an Python API hosted online in render, so if the Analysis take time to resolve is because the render is waking up!, be pacience please...</h4>
+      <p>________</p>
+      {/* PORTFOLIO */}
+      <div style={{ marginBottom: 30 }}>
+        <h2>Portfolio</h2>
+
+        {portfolio.map((p, i) => (
+          <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+            <input
+              value={p.symbol}
+              placeholder="Ticker"
+              onChange={(e) => updateItem(i, "symbol", e.target.value)}
+              style={{ padding: 8 }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <input
+              type="number"
+              value={p.amount}
+              onChange={(e) => updateItem(i, "amount", e.target.value)}
+              style={{ padding: 8 }}
+            />
+            <button onClick={() => removeRow(i)}>✖</button>
+          </div>
+        ))}
+
+        <button onClick={addRow}>+ Add Asset</button>
+      </div>
+
+<p>{totalAssets} assets tracked</p>
+
+
+      {/* ANALYZE */}
+      <button
+        onClick={analyze}
+        style={{
+          padding: "12px 20px",
+          background: "#22c55e",
+          border: "none",
+          borderRadius: 6,
+          cursor: "pointer",
+          marginBottom: 30,
+        }}
+      >
+        {loading ? "Analyzing..." : "Analyze Portfolio"}
+      </button>
+
+      {/* TOP RECOMMENDATION */}
+      {result?.rotations?.[0] && (
+        <div
+          style={{
+            background: "#111",
+            padding: 20,
+            borderRadius: 10,
+            marginBottom: 20,
+            border: "1px solid #333",
+          }}
+        >
+          <h2> Top Opportunity</h2>
+
+          <h3>
+            Sell {result.rotations[0].from} → Buy {result.rotations[0].to}
+          </h3>
+
+          <p>{result.rotations[0].reason}</p>
         </div>
-      </main>
+      )}
+
+      {/* ALL ROTATIONS */}
+      <div>
+        <h2>Recommendations</h2>
+
+        {result?.rotations?.map((r: any, i: number) => (
+          <div
+            key={i}
+            style={{
+              background: "#111",
+              padding: 15,
+              marginBottom: 10,
+              borderRadius: 8,
+              border: "1px solid #333",
+            }}
+          >
+            <strong>
+               {r.from} → {r.to} ({r.percent}%)
+            </strong>
+            <p>{r.reason}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
