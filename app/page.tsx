@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 export default function Home() {
-  const [portfolio, setPortfolio] = useState([
+  const [portfolio, setPortfolio] = useState<Asset[]>([
     { symbol: "BTC-USD", amount: 0.5 },
     { symbol: "AAPL", amount: 10 },
   ]);
