@@ -10,11 +10,26 @@ export default function Home() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  const updateItem = (i: number, field: string, value: any) => {
-    const copy = [...portfolio];
-    copy[i][field] = field === "amount" ? Number(value) : value;
-    setPortfolio(copy);
-  };
+    type Asset = {
+      symbol: string;
+      amount: number;
+    };
+
+    const updateItem = (
+      i: number,
+      field: "symbol" | "amount",
+      value: string | number
+    ) => {
+      const copy = [...portfolio];
+
+      if (field === "amount") {
+        copy[i].amount = Number(value);
+      } else {
+        copy[i].symbol = String(value);
+      }
+
+      setPortfolio(copy);
+    };
 
   const addRow = () => {
     setPortfolio([...portfolio, { symbol: "", amount: 0 }]);
