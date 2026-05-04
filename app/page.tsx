@@ -65,8 +65,11 @@ export default function Home() {
       }),
     });
     const agentData = await agentRes.json();
-    setAiExplanation(agentData.explanation);
+    //setAiExplanation(agentData.explanation);
 
+    setAiExplanation(
+        agentData.explanation || "No AI explanation available - API Error or OutOfGas :-("
+    );
     setLoading(false);
   };
 
