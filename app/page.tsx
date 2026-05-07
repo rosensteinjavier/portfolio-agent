@@ -1,21 +1,41 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect  } from "react";
+import AIInsight from './AIInsight';
 
 export default function Home() {
   const [aiExplanation, setAiExplanation] = useState("");
   const [portfolio, setPortfolio] = useState<Asset[]>([
     { symbol: "BTC-USD", amount: 0.5 },
-    { symbol: "AAPL", amount: 10 },
+    { symbol: "AAPL", amount: 20 },
+    { symbol: "GOOGL", amount: 10 },
+    { symbol: "TSLA", amount: 15 },
+    { symbol: "MSFT", amount: 5 },
+    { symbol: "AMZN", amount: 30 },
+    { symbol: "MELI", amount: 10 },
+    { symbol: "META", amount: 10 },
   ]);
 
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
+// Add this ref
+  const portfolioContainerRef = useRef<HTMLDivElement>(null);
 
     type Asset = {
       symbol: string;
       amount: number;
     };
+
+  // Add this effect to scroll to bottom when portfolio changes
+  useEffect(() => {
+    if (portfolioContainerRef.current) {
+      portfolioContainerRef.current.scrollTop = portfolioContainerRef.current.scrollHeight;
+    }
+  }, [portfolio]); // This triggers whenever portfolio changes
+
+  const addRow = () => {
+    setPortfolio([...portfolio, { symbol: "", amount: 0 }]);
+  };
 
     const updateItem = (
       i: number,
@@ -32,10 +52,6 @@ export default function Home() {
 
       setPortfolio(copy);
     };
-
-  const addRow = () => {
-    setPortfolio([...portfolio, { symbol: "", amount: 0 }]);
-  };
 
   const removeRow = (i: number) => {
     setPortfolio(portfolio.filter((_, idx) => idx !== i));
@@ -76,15 +92,8 @@ export default function Home() {
   const totalAssets = portfolio.length;
 
   return (
-    <div
-      style={{
-        padding: 30,
-        background: "#0b0b0b",
-        color: "#fff",
-        minHeight: "100vh",
-        fontFamily: "sans-serif",
-      }}
-    >
+    <div style={{ padding: 30, background: "#0b0b0b", color: "#fff", minHeight: "100vh", fontFamily: "sans-serif" }}>
+
       <h1 style={{ fontSize: 28, marginBottom: 20 }}>
         Portfolio Rotation Agent
       </h1>
@@ -92,30 +101,101 @@ export default function Home() {
       <h3>...The analysis take count of the actual portfolio vs a bigger list of important actives so can suggest sells & buys.</h3>
       <h4>...this portfolio list contrast agains an Python API hosted online in render, so if the Analysis take time to resolve is because the render is waking up!, be pacience please...</h4>
       <p>________</p>
-      {/* PORTFOLIO */}
-      <div style={{ marginBottom: 30 }}>
-        <h2>Portfolio</h2>
 
+{/* PORTFOLIO - COMPACT VERSION */}
+<div style={{ marginBottom: 30 }}>
+  <h2>Portfolio</h2>
+
+  {/* Header row */}
+  <div style={{
+    display: "flex",
+    gap: 10,
+    marginBottom: 10,
+    fontSize: 12,
+    color: "#888",
+    paddingLeft: 8
+  }}>
+    <div style={{ width: "150px" }}>Symbol</div>
+    <div style={{ width: "120px" }}>Amount (shares)</div>
+    <div style={{ width: "50px" }}></div>
+  </div>
+
+  {/* Portfolio rows - more compact */}
+  <div
+          ref={portfolioContainerRef}
+          style={{
+            maxHeight: "300px",
+            overflowY: "auto",
+            scrollBehavior: "smooth" // Adds smooth scrolling
+          }}
+        >
         {portfolio.map((p, i) => (
-          <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10 }}>
-            <input
-              value={p.symbol}
-              placeholder="Ticker"
-              onChange={(e) => updateItem(i, "symbol", e.target.value)}
-              style={{ padding: 8 }}
-            />
-            <input
-              type="number"
-              value={p.amount}
-              onChange={(e) => updateItem(i, "amount", e.target.value)}
-              style={{ padding: 8 }}
-            />
-            <button onClick={() => removeRow(i)}>✖</button>
-          </div>
-        ))}
-
-        <button onClick={addRow}>+ Add Asset</button>
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                gap: 10,
+                marginBottom: 8,
+                alignItems: "center"
+              }}
+            >
+        <input
+          value={p.symbol}
+          placeholder="Ticker"
+          onChange={(e) => updateItem(i, "symbol", e.target.value)}
+          style={{
+            padding: "6px 8px",
+            width: "150px",
+            fontSize: "14px"
+          }}
+        />
+        <input
+          type="number"
+          value={p.amount}
+          onChange={(e) => updateItem(i, "amount", e.target.value)}
+          style={{
+            padding: "6px 8px",
+            width: "120px",
+            fontSize: "14px"
+          }}
+        />
+        <button
+          onClick={() => removeRow(i)}
+          style={{
+            padding: "4px 8px",
+            fontSize: "12px",
+            background: "#333",
+            border: "none",
+            borderRadius: 4,
+            cursor: "pointer",
+            color: "#fff"
+          }}
+        >
+          ✖
+        </button>
       </div>
+    ))}
+  </div>
+
+  <button
+    onClick={addRow}
+    style={{
+      marginTop: 12,
+      padding: "6px 12px",
+      fontSize: "14px",
+      background: "#333",
+      border: "none",
+      borderRadius: 4,
+      cursor: "pointer",
+      color: "#fff"
+    }}
+  >
+    + Add Asset
+  </button>
+</div>
+
+
+
 
 <p>{totalAssets} assets tracked</p>
 
@@ -132,7 +212,7 @@ export default function Home() {
           marginBottom: 30,
         }}
       >
-        {loading ? "Analyzing..." : "Analyze Portfolio"}
+        {loading ? "Analyzing...please wait!" : "Analyze Portfolio"}
       </button>
 
       {/* TOP RECOMMENDATION */}
@@ -179,17 +259,13 @@ export default function Home() {
         ))}
       </div>
 
-
-
+      {/* AI INSIGHT - FIXED HERE */}
       {aiExplanation && (
-      <div style={{ marginTop: 20 }}>
-        <h2>🧠 AI Insight</h2>
-        <p>{aiExplanation}</p>
-      </div>
-    )}
-
-
-
+        <div style={{ marginTop: 20 }}>
+          <h2>🧠 AI Insight</h2>
+          <AIInsight explanation={aiExplanation} loading={loading} />
+        </div>
+      )}
     </div>
   );
 }

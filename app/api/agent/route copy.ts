@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
     const { text } = await generateText({
       model: groq("llama-3.3-70b-versatile"), // Free model
-  prompt: `
+      prompt: `
 You are an AI portfolio manager.
 
 Explain these portfolio rotations:
@@ -24,33 +24,13 @@ ${JSON.stringify(rotations, null, 2)}
 Portfolio:
 ${JSON.stringify(portfolio, null, 2)}
 
-IMPORTANT FORMATTING REQUIREMENTS:
-- Use clear line breaks between each recommendation
-- Start each numbered point on a new line
-- Add an empty line between different recommendations
-- Use bullet points or numbered lists properly
-- Keep it concise but well-structured
-
-Example format:
-
-**Summary**
-[Brief overview]
-
-**Recommendations:**
-
-1. [First recommendation]
-   [Details on new line with proper spacing]
-
-2. [Second recommendation]
-   [Details on new line]
-
 Be concise and professional.
       `,
-});
-
+      temperature: 0.7,
+      maxTokens: 500,
+    });
 
     console.log('Groq response received, length:', text.length);
-    console.log(text);
 
     return Response.json({ explanation: text });
 
