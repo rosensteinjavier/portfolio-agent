@@ -94,13 +94,16 @@ export default function Home() {
   return (
     <div style={{ padding: 30, background: "#0b0b0b", color: "#fff", minHeight: "100vh", fontFamily: "sans-serif" }}>
 
-      <h1 style={{ fontSize: 28, marginBottom: 20 }}>
-        Portfolio Rotation Agent
-      </h1>
-      <h3>This agent scans the market and identifies the best capital rotation opportunities in real time.</h3>
-      <h3>...The analysis take count of the actual portfolio vs a bigger list of important actives so can suggest sells & buys.</h3>
-      <h4>...this portfolio list contrast agains an Python API hosted online in render, so if the Analysis take time to resolve is because the render is waking up!, be pacience please...</h4>
-      <p>________</p>
+<h3>Real-time Portfolio Rotation Analysis</h3>
+<p style={{ fontSize: 14, lineHeight: 1.5, color: "#aaa", marginBottom: 8 }}>
+  Compares your holdings vs. top market assets to find the best rotation opportunities.
+</p>
+<p style={{ fontSize: 14, lineHeight: 1.6, color: "#ccc", marginBottom: 10 }}>
+  <strong>Note:</strong> The analysis is powered by a Python API hosted on Render.com's free tier.
+  If the first analysis takes a few seconds longer than expected, please be patient —
+  the service is "waking up" from inactivity.
+</p>
+<p>________</p>
 
 {/* PORTFOLIO - COMPACT VERSION */}
 <div style={{ marginBottom: 30 }}>
