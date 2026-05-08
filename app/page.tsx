@@ -1,6 +1,8 @@
 "use client";
 import { useState, useRef, useEffect  } from "react";
 import AIInsight from './AIInsight';
+import HowItWorks from './HowItWorks';
+
 
 export default function Home() {
   const [aiExplanation, setAiExplanation] = useState("");
@@ -98,12 +100,16 @@ export default function Home() {
 <p style={{ fontSize: 14, lineHeight: 1.5, color: "#aaa", marginBottom: 8 }}>
   Compares your holdings vs. top market assets to find the best rotation opportunities.
 </p>
-<p style={{ fontSize: 14, lineHeight: 1.6, color: "#ccc", marginBottom: 10 }}>
-  <strong>Note:</strong> The analysis is powered by a Python API hosted on Render.com's free tier.
-  If the first analysis takes a few seconds longer than expected, please be patient —
-  the service is "waking up" from inactivity.
-</p>
+{/* <p><strong>How the Portfolio Rotation Agent works:</strong></p>
+  <ul style={{ marginTop: 8, paddingLeft: 20 }}>
+    <li>Scans the market in real-time for optimal capital rotation opportunities</li>
+    <li>Compares your current portfolio against a curated list of key assets</li>
+    <li>Suggests which assets to sell and which to buy based on technical analysis</li>
+  </ul> */}
 <p>________</p>
+<p style={{ fontSize: 14, lineHeight: 1.6, color: "#ccc", marginBottom: 10 }}>
+this list is a demo, you should customize your own for a correct analysis...</p>
+
 
 {/* PORTFOLIO - COMPACT VERSION */}
 <div style={{ marginBottom: 30 }}>
@@ -269,6 +275,100 @@ export default function Home() {
           <AIInsight explanation={aiExplanation} loading={loading} />
         </div>
       )}
+
+
+
+
+
+
+
+
+
+
+<HowItWorks />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* About Section */}
+<div style={{
+  marginTop: 40,
+  padding: "20px 25px",
+  background: "#0a0a0a",
+  borderRadius: 10,
+  border: "1px solid #222",
+  textAlign: "center"
+}}>
+
+
+
+
+
+  <p style={{
+    fontFamily: "Georgia, serif",
+    fontStyle: "italic",
+    fontSize: 13,
+    color: "#666",
+    marginBottom: 12
+  }}>
+    Turning market data into actionable insights
+  </p>
+<p style={{ fontSize: 13, color: "#aaa", marginBottom: 8 }}>
+    Created by <strong style={{ color: "#fff" }}>Jacho </strong>
+
+     — passionate about algorithmic trading and market analysis tools.
+  </p>
+  <p style={{ fontSize: 10, marginTop: 10, color: "#444" }}>
+    Built with Next.js • Python FastAPI • DeepSeek/Groq AI • Real-time Market Data
+  </p>
+
+
+
+<a
+  href="https://t.me/jrosenstein"
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{ color: "#555", textDecoration: "none" }}
+  onMouseEnter={(e) => e.currentTarget.style.color = "#22c55e"}
+  onMouseLeave={(e) => e.currentTarget.style.color = "#555"}
+  title="Contact me on Telegram"
+>
+ tg:📨 |
+</a>
+
+
+    <a
+      href="mailto:rosensteinjavier@gmail.com"
+      style={{ color: "#22c55e", textDecoration: "none" }}
+      onMouseEnter={(e) => e.currentTarget.style.color = "#22c55e"}
+      onMouseLeave={(e) => e.currentTarget.style.color = "#555"}
+  title="Contact me by email"
+    >
+       | email: rosensteinjavier@gmail.com
+    </a>
+
+
+
+
+</div>
+
+
+
+
+
+
     </div>
   );
 }
